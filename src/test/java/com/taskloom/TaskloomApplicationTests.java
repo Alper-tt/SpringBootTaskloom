@@ -1,4 +1,4 @@
-package com.taskloom.taskloom;
+package com.taskloom;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

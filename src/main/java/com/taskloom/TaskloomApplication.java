@@ -1,9 +1,11 @@
-package com.taskloom.taskloom;
+package com.taskloom;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
+@EnableJpaRepositories
 public class TaskloomApplication {
 
 	public static void main(String[] args) {
