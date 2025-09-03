@@ -76,28 +76,37 @@ jobs:
           set -euxo pipefail
           sudo apt-get update
           sudo apt-get install -y unzip curl
-          GAUGE_URL=$(curl -s https://api.github.com/repos/getgauge/gauge/releases/latest \
-            | grep browser_download_url \
-            | grep -E 'linux.*(x86_64|amd64)\.zip' \
+          GAUGE_URL=$(curl -fsSL https://api.github.com/repos/getgauge/gauge/releases/latest \
+            | grep -Eo '"browser_download_url":\s*"[^"]+linux.*(x86_64|amd64)\.zip"' \
             | cut -d '"' -f 4 | head -n1)
-          [ -n "$GAUGE_URL" ]
-          echo "Downloading $GAUGE_URL"
+          echo "Downloading: $GAUGE_URL"
           curl -fL "$GAUGE_URL" -o gauge.zip
-          test -s gauge.zip
-          unzip -q gauge.zip -d gauge-bin
-          BIN_PATH=$(find gauge-bin -type f -name gauge -perm -111 | head -n1)
-          [ -n "$BIN_PATH" ]
-          sudo mv "$BIN_PATH" /usr/local/bin/gauge
-          chmod +x /usr/local/bin/gauge
+          
+          # Zip içindeki gerçek gauge binary yolunu bul ve taşı
+          unzip -q gauge.zip -d gauge-unpack
+          BIN_PATH=$(unzip -Z1 gauge.zip | grep '/bin/gauge$' | head -n1)
+          sudo install -m 0755 "gauge-unpack/${BIN_PATH}" /usr/local/bin/gauge
+          
           gauge -v
+    
 
-      - name: Install Gauge Java plugin
+      - name: Install Gauge plugins
         run: |
-          set -euxo pipefail
           gauge install java
-          gauge version
-      
-      
+          gauge install html-report
+          gauge install xml-report
+          gauge --list-plugins
+
+      - name: Compile api-tests (no tests)
+        working-directory: api-tests
+        run: |
+          ./mvnw -q -DskipTests=true test-compile || mvn -q -DskipTests=true test-compile
+
+      - name: Debug classpath & lombok
+        working-directory: api-tests
+        run: |
+          ./mvnw -q -DskipTests=true help:effective-pom
+          ./mvnw -q -DskipTests=true dependency:tree
 
       - name: Compile Gauge Java steps (if Maven project inside api-tests)
         working-directory: api-tests
