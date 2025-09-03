@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Images ###
+.gauge/screenshots
+reports/html-report/images

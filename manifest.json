@@ -1,8 +1,0 @@
-{
-  "Language": "java",
-  "Plugins": [
-    "html-report",
-    "xml-report"
-  ],
-  "EnvironmentDir": ""
-}

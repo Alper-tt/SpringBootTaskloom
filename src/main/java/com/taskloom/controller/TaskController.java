@@ -1,6 +1,5 @@
 package com.taskloom.controller;
 
-import com.taskloom.model.TaskStatus;
 import com.taskloom.model.request.TaskCreateRequest;
 import com.taskloom.model.request.TaskStatusUpdate;
 import com.taskloom.model.request.TaskUpdateRequest;

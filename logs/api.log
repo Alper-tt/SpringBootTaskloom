@@ -1,0 +1,38 @@
+02-09-2025 15:24:01.329 [Gauge] [INFO] Initializing concepts cache with 0 concepts
+02-09-2025 15:24:01.330 [Gauge] [INFO] Initializing specs cache with 5 specs
+02-09-2025 15:24:01.330 [Gauge] [DEBUG] Adding specs from /Users/alper/Desktop/taskloom-backend/specs/task_status.spec
+02-09-2025 15:24:01.330 [Gauge] [DEBUG] Adding specs from /Users/alper/Desktop/taskloom-backend/specs/task_get_list.spec
+02-09-2025 15:24:01.330 [Gauge] [DEBUG] Adding specs from /Users/alper/Desktop/taskloom-backend/specs/task_create.spec
+02-09-2025 15:24:01.330 [Gauge] [DEBUG] Adding specs from /Users/alper/Desktop/taskloom-backend/specs/task_delete.spec
+02-09-2025 15:24:01.330 [Gauge] [DEBUG] Adding specs from /Users/alper/Desktop/taskloom-backend/specs/taks_update.spec
+02-09-2025 15:24:01.330 [Gauge] [INFO] Initializing steps cache with 5 steps
+02-09-2025 15:24:01.330 [Gauge] [INFO] Gauge daemon initialized and listening on port: 63575
+02-09-2025 15:24:01.330 [Gauge] [DEBUG] Watching directory: /Users/alper/Desktop/taskloom-backend/specs
+02-09-2025 15:24:01.330 [Gauge] [DEBUG] Found 5 files
+02-09-2025 15:25:16.506 [Gauge] [INFO] Initializing concepts cache with 0 concepts
+02-09-2025 15:25:16.508 [Gauge] [INFO] Initializing specs cache with 5 specs
+02-09-2025 15:25:16.508 [Gauge] [DEBUG] Adding specs from /Users/alper/Desktop/taskloom-backend/specs/taks_update.spec
+02-09-2025 15:25:16.508 [Gauge] [DEBUG] Adding specs from /Users/alper/Desktop/taskloom-backend/specs/task_create.spec
+02-09-2025 15:25:16.508 [Gauge] [DEBUG] Adding specs from /Users/alper/Desktop/taskloom-backend/specs/task_get_list.spec
+02-09-2025 15:25:16.508 [Gauge] [DEBUG] Adding specs from /Users/alper/Desktop/taskloom-backend/specs/task_status.spec
+02-09-2025 15:25:16.508 [Gauge] [DEBUG] Adding specs from /Users/alper/Desktop/taskloom-backend/specs/task_delete.spec
+02-09-2025 15:25:16.508 [Gauge] [INFO] Initializing steps cache with 5 steps
+02-09-2025 15:25:16.508 [Gauge] [INFO] Gauge daemon initialized and listening on port: 63669
+02-09-2025 15:25:16.508 [Gauge] [DEBUG] Watching directory: /Users/alper/Desktop/taskloom-backend/specs
+02-09-2025 15:25:16.508 [Gauge] [DEBUG] Found 5 files
+02-09-2025 15:26:46.264 [Gauge] [INFO] Initializing concepts cache with 0 concepts
+02-09-2025 15:26:46.265 [Gauge] [INFO] Initializing specs cache with 5 specs
+02-09-2025 15:26:46.265 [Gauge] [DEBUG] Adding specs from /Users/alper/Desktop/taskloom/taskloom-backend/specs/task_get_list.spec
+02-09-2025 15:26:46.265 [Gauge] [DEBUG] Adding specs from /Users/alper/Desktop/taskloom/taskloom-backend/specs/task_status.spec
+02-09-2025 15:26:46.265 [Gauge] [DEBUG] Adding specs from /Users/alper/Desktop/taskloom/taskloom-backend/specs/task_create.spec
+02-09-2025 15:26:46.265 [Gauge] [DEBUG] Adding specs from /Users/alper/Desktop/taskloom/taskloom-backend/specs/task_delete.spec
+02-09-2025 15:26:46.265 [Gauge] [DEBUG] Adding specs from /Users/alper/Desktop/taskloom/taskloom-backend/specs/taks_update.spec
+02-09-2025 15:26:46.265 [Gauge] [INFO] Initializing steps cache with 5 steps
+02-09-2025 15:26:46.265 [Gauge] [INFO] Gauge daemon initialized and listening on port: 63773
+02-09-2025 15:26:46.265 [Gauge] [DEBUG] Watching directory: /Users/alper/Desktop/taskloom/taskloom-backend/specs
+02-09-2025 15:26:46.265 [Gauge] [DEBUG] Found 5 files
+02-09-2025 15:49:08.554 [Gauge] [DEBUG] Spec file removed: /Users/alper/Desktop/taskloom/taskloom-backend/specs/task_create.spec
+02-09-2025 15:49:08.555 [Gauge] [DEBUG] Spec file removed: /Users/alper/Desktop/taskloom/taskloom-backend/specs/task_status.spec
+02-09-2025 15:49:08.555 [Gauge] [DEBUG] Spec file removed: /Users/alper/Desktop/taskloom/taskloom-backend/specs/taks_update.spec
+02-09-2025 15:49:08.555 [Gauge] [DEBUG] Spec file removed: /Users/alper/Desktop/taskloom/taskloom-backend/specs/task_get_list.spec
+02-09-2025 15:49:08.555 [Gauge] [DEBUG] Spec file removed: /Users/alper/Desktop/taskloom/taskloom-backend/specs/task_delete.spec
