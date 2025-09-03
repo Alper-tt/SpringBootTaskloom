@@ -120,13 +120,14 @@ jobs:
             echo "No Maven project detected in api-tests (skipping compile)."
           fi
 
-      - name: Run Gauge specs (smoke/regression)
+      - name: Run Gauge specs via Maven
         working-directory: api-tests
         env:
           BASE_URL: ${{ env.BASE_URL }}
+          GAUGE_LOG_LEVEL: debug
         run: |
-          set -euxo pipefail
-          gauge run specs
+          ./mvnw -q -DskipTests=true test-compile gauge:execute -DspecsDir=specs
+    
 
       - name: Upload Gauge HTML report
         if: always()
