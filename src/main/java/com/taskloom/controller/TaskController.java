@@ -42,7 +42,7 @@ public class TaskController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteTaskById(@PathVariable Integer id) {
         taskService.deleteTaskById(id);
-        return ResponseEntity.status(201).body(id + " was deleted");
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PatchMapping("/{id}/status")

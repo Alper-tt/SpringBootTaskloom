@@ -19,6 +19,9 @@ import java.util.List;
 public class TaskService {
     private final TaskRepository taskRepository;
 
+    private TaskResponse toResponse(TaskEntity e){
+        return new TaskResponse(e.getId(), e.getTitle(), e.getDescription(), e.getStatus());
+    }
 
     public List<TaskResponse> findAll() {
         List<TaskEntity> taskEntities = taskRepository.findAll();
@@ -27,46 +30,25 @@ public class TaskService {
         }
 
         return taskEntities.stream()
-                .map(taskEntity -> new TaskResponse(
-                        taskEntity.getId(),
-                        taskEntity.getTitle(),
-                        taskEntity.getDescription(),
-                        taskEntity.getStatus()
-                )).toList();
+                .map(this::toResponse)
+                .toList();
     }
 
     public TaskResponse findById(Integer id) {
         TaskEntity taskEntity = taskRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found"));
 
-        return new TaskResponse(
-                taskEntity.getId(),
-                taskEntity.getTitle(),
-                taskEntity.getDescription(),
-                taskEntity.getStatus()
-        );
+        return toResponse(taskEntity);
     }
 
     public TaskResponse createTask(TaskCreateRequest taskCreateRequest) {
         TaskEntity taskEntity = TaskEntity.builder()
                 .title(taskCreateRequest.getTitle())
                 .description(taskCreateRequest.getDescription())
+                .status(taskCreateRequest.getStatus() != null ? taskCreateRequest.getStatus() : TaskStatus.TODO)
                 .build();
 
-        if(taskCreateRequest.getStatus() != null){
-            taskEntity.setStatus(taskCreateRequest.getStatus());
-        }
-        else{
-            taskEntity.setStatus(TaskStatus.TODO);
-        }
-
-        TaskEntity savedTask = taskRepository.save(taskEntity);
-        return new TaskResponse(
-                savedTask.getId(),
-                savedTask.getTitle(),
-                savedTask.getDescription(),
-                savedTask.getStatus()
-        );
+        return toResponse(taskRepository.save(taskEntity));
     }
 
     public TaskResponse updateTask(Integer id, TaskUpdateRequest taskUpdateRequest) {
@@ -75,18 +57,13 @@ public class TaskService {
 
         taskEntity.setTitle(taskUpdateRequest.getTitle());
         taskEntity.setDescription(taskUpdateRequest.getDescription());
-        taskEntity.setStatus(taskUpdateRequest.getStatus());
-        TaskEntity updatedTask = taskRepository.save(taskEntity);
+        taskEntity.setStatus(taskUpdateRequest.getStatus() != null ? taskUpdateRequest.getStatus() : TaskStatus.TODO);
 
-        return new TaskResponse(
-                updatedTask.getId(),
-                updatedTask.getTitle(),
-                updatedTask.getDescription(),
-                updatedTask.getStatus()
-        );
+        return toResponse(taskRepository.save(taskEntity));
     }
 
     public void deleteTaskById(Integer id) {
+        if(!taskRepository.existsById(id)) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found");
         taskRepository.deleteById(id);
     }
 
@@ -94,13 +71,6 @@ public class TaskService {
         TaskEntity taskEntity = taskRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found"));
         taskEntity.setStatus(status.getTaskStatus());
-        TaskEntity updatedTask = taskRepository.save(taskEntity);
-
-        return new TaskResponse(
-                updatedTask.getId(),
-                updatedTask.getTitle(),
-                updatedTask.getDescription(),
-                updatedTask.getStatus()
-        );
+        return toResponse(taskRepository.save(taskEntity));
     }
 }
