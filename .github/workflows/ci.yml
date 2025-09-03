@@ -76,17 +76,17 @@ jobs:
           set -euxo pipefail
           sudo apt-get update
           sudo apt-get install -y unzip curl
-          GAUGE_URL=$(curl -fsSL https://api.github.com/repos/getgauge/gauge/releases/latest \
-            | grep -Eo '"browser_download_url":\s*"[^"]+linux.*(x86_64|amd64)\.zip"' \
+          # Son sürümün doğru Linux x86_64 zip linkini çek
+          GAUGE_URL=$(curl -s https://api.github.com/repos/getgauge/gauge/releases/latest \
+            | grep browser_download_url \
+            | grep -E 'linux.*(x86_64|amd64)\.zip' \
             | cut -d '"' -f 4 | head -n1)
-          echo "Downloading: $GAUGE_URL"
+          [ -n "$GAUGE_URL" ]
+          echo "Downloading $GAUGE_URL"
           curl -fL "$GAUGE_URL" -o gauge.zip
-          
-          # Zip içindeki gerçek gauge binary yolunu bul ve taşı
-          unzip -q gauge.zip -d gauge-unpack
-          BIN_PATH=$(unzip -Z1 gauge.zip | grep '/bin/gauge$' | head -n1)
-          sudo install -m 0755 "gauge-unpack/${BIN_PATH}" /usr/local/bin/gauge
-          
+          # Zip içindeki gerçek binary genelde bin/gauge altında
+          unzip -q gauge.zip -d gauge-bin
+          sudo mv gauge-bin/bin/gauge /usr/local/bin/gauge
           gauge -v
 
       - name: Install Gauge plugins
