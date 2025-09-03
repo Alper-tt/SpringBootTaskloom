@@ -71,39 +71,32 @@ jobs:
           repository: alper-tt/TaskloomApiTestRestAssured
           path: api-tests
 
-      - name: Install Gauge CLI (robust)
+      - name: Install Gauge CLI
         run: |
           set -euxo pipefail
           sudo apt-get update
           sudo apt-get install -y unzip curl
-          
-          # Dinamik olarak en son release'ten linux + 64bit asset URL'sini çek
+          # Son sürümün doğru Linux x86_64 zip linkini çek
           GAUGE_URL=$(curl -s https://api.github.com/repos/getgauge/gauge/releases/latest \
             | grep browser_download_url \
             | grep -E 'linux.*(x86_64|amd64)\.zip' \
             | cut -d '"' -f 4 | head -n1)
-          
-          if [ -z "${GAUGE_URL:-}" ]; then
-            echo "Gauge asset URL not found from GitHub API" >&2
-            exit 1
-          fi
-          
-          echo "Downloading: $GAUGE_URL"
+          [ -n "$GAUGE_URL" ]
+          echo "Downloading $GAUGE_URL"
           curl -fL "$GAUGE_URL" -o gauge.zip
-          
-          # Dosya boyutunu kontrol et
-          test -s gauge.zip || { echo "Downloaded gauge.zip is empty"; exit 1; }
-          
+          # Zip içindeki gerçek binary genelde bin/gauge altında
           unzip -q gauge.zip -d gauge-bin
-          sudo mv gauge-bin/gauge /usr/local/bin/gauge
-          gauge --version
+          sudo mv gauge-bin/bin/gauge /usr/local/bin/gauge
+          gauge -v
 
       - name: Install Gauge Java plugin
         run: |
           set -euxo pipefail
           gauge install java
-          gauge --list-plugins
-    
+          # eski --list-plugins yok; versiyon çıktısı pluginleri de gösterir
+          gauge -v
+      
+      
 
       - name: Compile Gauge Java steps (if Maven project inside api-tests)
         working-directory: api-tests
