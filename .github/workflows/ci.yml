@@ -1,0 +1,123 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build-test-and-api-e2e:
+    runs-on: ubuntu-latest
+
+    env:
+      JAVA_VERSION: "17"
+      APP_PORT: "8080"
+      BASE_URL: "http://localhost:8080"
+
+    steps:
+      - name: Checkout backend
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Cache Maven repo
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: m2-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            m2-${{ runner.os }}-
+
+      - name: Build (compile) backend
+        run: ./mvnw -B -DskipTests=true package
+
+      - name: Run unit & integration tests (backend)
+        run: ./mvnw -B test
+
+      - name: Upload surefire reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-surefire-reports
+          path: target/surefire-reports
+
+      # ---- Uygulamayı test profili ile ayağa kaldır ----
+      - name: Start app in background
+        run: |
+          nohup java -jar target/*.jar --spring.profiles.active=test --server.port=${APP_PORT} > app.log 2>&1 &
+          echo $! > app.pid
+
+      - name: Wait for health endpoint
+        run: |
+          for i in {1..40}; do
+            if curl -fsS ${BASE_URL}/actuator/health >/dev/null 2>&1; then
+              echo "App is up!"
+              exit 0
+            fi
+            echo "Waiting for app..."
+            sleep 3
+          done
+          echo "App did not start in time"; cat app.log; exit 1
+
+      # ---- API TESTS REPO'YU ÇEK, GAUGE ÇALIŞTIR ----
+      - name: Checkout api-tests repo
+        uses: actions/checkout@v4
+        with:
+          repository: alper-tt/taskloom-api-tests
+          path: api-tests
+
+      - name: Install Gauge CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget unzip
+          GAUGE_URL=$(curl -s https://api.github.com/repos/getgauge/gauge/releases/latest | grep browser_download_url | grep linux | grep x64.zip | cut -d '"' -f 4)
+          wget -q "$GAUGE_URL" -O gauge.zip
+          unzip -q gauge.zip -d gauge-bin
+          sudo mv gauge-bin/gauge /usr/local/bin/gauge
+          gauge --version
+
+      - name: Install Gauge Java plugin
+        run: |
+          gauge install java
+          gauge --list-plugins
+
+      - name: Compile Gauge Java steps (if Maven project inside api-tests)
+        working-directory: api-tests
+        run: |
+          if [ -f "mvnw" ] || [ -f "pom.xml" ]; then
+            ./mvnw -q -DskipTests=true test-compile || mvn -q -DskipTests=true test-compile
+          else
+            echo "No Maven project detected in api-tests (skipping compile)."
+          fi
+
+      - name: Run Gauge specs (smoke/regression)
+        working-directory: api-tests
+        env:
+          BASE_URL: ${{ env.BASE_URL }}
+        run: |
+          # ör: sadece smoke tag'lerini çalıştırmak istersen:
+          # gauge run --tags "smoke" specs
+          gauge run specs
+
+      - name: Upload Gauge HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gauge-report
+          path: api-tests/reports/html-report
+
+      - name: Print app log on failure
+        if: failure()
+        run: |
+          echo "==== app.log ===="
+          cat app.log || true
+
+      - name: Stop app
+        if: always()
+        run: |
+          if [ -f app.pid ]; then kill -9 $(cat app.pid) || true; fi
