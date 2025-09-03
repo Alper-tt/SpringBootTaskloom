@@ -76,7 +76,6 @@ jobs:
           set -euxo pipefail
           sudo apt-get update
           sudo apt-get install -y unzip curl
-          # Son sürümün doğru Linux x86_64 zip linkini çek
           GAUGE_URL=$(curl -s https://api.github.com/repos/getgauge/gauge/releases/latest \
             | grep browser_download_url \
             | grep -E 'linux.*(x86_64|amd64)\.zip' \
@@ -84,17 +83,19 @@ jobs:
           [ -n "$GAUGE_URL" ]
           echo "Downloading $GAUGE_URL"
           curl -fL "$GAUGE_URL" -o gauge.zip
-          # Zip içindeki gerçek binary genelde bin/gauge altında
+          test -s gauge.zip
           unzip -q gauge.zip -d gauge-bin
-          sudo mv gauge-bin/bin/gauge /usr/local/bin/gauge
+          BIN_PATH=$(find gauge-bin -type f -name gauge -perm -111 | head -n1)
+          [ -n "$BIN_PATH" ]
+          sudo mv "$BIN_PATH" /usr/local/bin/gauge
+          chmod +x /usr/local/bin/gauge
           gauge -v
 
       - name: Install Gauge Java plugin
         run: |
           set -euxo pipefail
           gauge install java
-          # eski --list-plugins yok; versiyon çıktısı pluginleri de gösterir
-          gauge -v
+          gauge version
       
       
 
