@@ -65,32 +65,37 @@ jobs:
           echo "App did not start in time"; cat app.log; exit 1
 
       # ---- API TESTS REPO'YU ÇEK, GAUGE ÇALIŞTIR ----
+      # ... aynı başlıklar ...
+
+      # ---- API TESTS REPO'YU ÇEK, GAUGE ÇALIŞTIR ----
       - name: Checkout api-tests repo
         uses: actions/checkout@v4
         with:
           repository: alper-tt/TaskloomApiTestRestAssured
           path: api-tests
+          # Eğer repo PRIVATE ise aşağıdakini aç ve GH_PAT secret’ını ekle:
+          # token: ${{ secrets.GH_PAT }}
 
-      - name: Install Gauge CLI
+      - name: Install Gauge CLI + Java plugin
         run: |
+          set -euxo pipefail
           sudo apt-get update
-          sudo apt-get install -y wget unzip
-          GAUGE_URL=$(curl -s https://api.github.com/repos/getgauge/gauge/releases/latest | grep browser_download_url | grep linux | grep x64.zip | cut -d '"' -f 4)
-          wget -q "$GAUGE_URL" -O gauge.zip
+          sudo apt-get install -y unzip curl
+          GAUGE_URL="https://github.com/getgauge/gauge/releases/latest/download/gauge-linux.x86_64.zip"
+          curl -L "$GAUGE_URL" -o gauge.zip
           unzip -q gauge.zip -d gauge-bin
           sudo mv gauge-bin/gauge /usr/local/bin/gauge
           gauge --version
-
-      - name: Install Gauge Java plugin
-        run: |
           gauge install java
-          gauge --list-plugins
 
       - name: Compile Gauge Java steps (if Maven project inside api-tests)
         working-directory: api-tests
         run: |
-          if [ -f "mvnw" ] || [ -f "pom.xml" ]; then
-            ./mvnw -q -DskipTests=true test-compile || mvn -q -DskipTests=true test-compile
+          set -euxo pipefail
+          if [ -x "./mvnw" ]; then
+            ./mvnw -q -DskipTests=true test-compile
+          elif [ -f "pom.xml" ]; then
+            mvn -q -DskipTests=true test-compile
           else
             echo "No Maven project detected in api-tests (skipping compile)."
           fi
@@ -100,8 +105,7 @@ jobs:
         env:
           BASE_URL: ${{ env.BASE_URL }}
         run: |
-          # ör: sadece smoke tag'lerini çalıştırmak istersen:
-          # gauge run --tags "smoke" specs
+          set -euxo pipefail
           gauge run specs
 
       - name: Upload Gauge HTML report
@@ -110,6 +114,7 @@ jobs:
         with:
           name: gauge-report
           path: api-tests/reports/html-report
+          if-no-files-found: warn
 
       - name: Print app log on failure
         if: failure()
