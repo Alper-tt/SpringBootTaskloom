@@ -68,7 +68,7 @@ jobs:
       - name: Checkout api-tests repo
         uses: actions/checkout@v4
         with:
-          repository: alper-tt/taskloom-api-tests
+          repository: alper-tt/TaskloomApiTestRestAssured
           path: api-tests
 
       - name: Install Gauge CLI
