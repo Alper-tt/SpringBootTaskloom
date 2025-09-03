@@ -65,28 +65,45 @@ jobs:
           echo "App did not start in time"; cat app.log; exit 1
 
       # ---- API TESTS REPO'YU ÇEK, GAUGE ÇALIŞTIR ----
-      # ... aynı başlıklar ...
-
-      # ---- API TESTS REPO'YU ÇEK, GAUGE ÇALIŞTIR ----
       - name: Checkout api-tests repo
         uses: actions/checkout@v4
         with:
           repository: alper-tt/TaskloomApiTestRestAssured
           path: api-tests
-          # Eğer repo PRIVATE ise aşağıdakini aç ve GH_PAT secret’ını ekle:
-          # token: ${{ secrets.GH_PAT }}
 
-      - name: Install Gauge CLI + Java plugin
+      - name: Install Gauge CLI (robust)
         run: |
           set -euxo pipefail
           sudo apt-get update
           sudo apt-get install -y unzip curl
-          GAUGE_URL="https://github.com/getgauge/gauge/releases/latest/download/gauge-linux.x86_64.zip"
-          curl -L "$GAUGE_URL" -o gauge.zip
+          
+          # Dinamik olarak en son release'ten linux + 64bit asset URL'sini çek
+          GAUGE_URL=$(curl -s https://api.github.com/repos/getgauge/gauge/releases/latest \
+            | grep browser_download_url \
+            | grep -E 'linux.*(x86_64|amd64)\.zip' \
+            | cut -d '"' -f 4 | head -n1)
+          
+          if [ -z "${GAUGE_URL:-}" ]; then
+            echo "Gauge asset URL not found from GitHub API" >&2
+            exit 1
+          fi
+          
+          echo "Downloading: $GAUGE_URL"
+          curl -fL "$GAUGE_URL" -o gauge.zip
+          
+          # Dosya boyutunu kontrol et
+          test -s gauge.zip || { echo "Downloaded gauge.zip is empty"; exit 1; }
+          
           unzip -q gauge.zip -d gauge-bin
           sudo mv gauge-bin/gauge /usr/local/bin/gauge
           gauge --version
+
+      - name: Install Gauge Java plugin
+        run: |
+          set -euxo pipefail
           gauge install java
+          gauge --list-plugins
+    
 
       - name: Compile Gauge Java steps (if Maven project inside api-tests)
         working-directory: api-tests
