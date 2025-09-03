@@ -88,7 +88,6 @@ jobs:
           sudo install -m 0755 "gauge-unpack/${BIN_PATH}" /usr/local/bin/gauge
           
           gauge -v
-    
 
       - name: Install Gauge plugins
         run: |
