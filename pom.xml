@@ -12,7 +12,7 @@
     <artifactId>taskloom-backend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>taskloom</name>
-    <description>Test-Driven Backend with Spring Boot</description>
+    <description>Less chaos, more completion - a human friendly task tracker</description>
     <url/>
     <licenses>
         <license/>

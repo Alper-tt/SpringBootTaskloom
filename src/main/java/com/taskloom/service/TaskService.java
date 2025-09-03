@@ -20,7 +20,7 @@ public class TaskService {
     private final TaskRepository taskRepository;
 
     private TaskResponse toResponse(TaskEntity e){
-        return new TaskResponse(e.getId(), e.getTitle(), e.getDescription(), e.getStatus());
+        return new TaskResponse(e.getId(), e.getTitle(), e.getDescription(), e.getStatus(), e.getCreatedAt(), e.getUpdatedAt());
     }
 
     public List<TaskResponse> findAll() {
