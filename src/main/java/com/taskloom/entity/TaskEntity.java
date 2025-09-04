@@ -11,14 +11,15 @@ import java.time.Instant;
 
 @Getter
 @Setter
-@Entity(name = "task")
+@Entity()
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @EntityListeners(AuditingEntityListener.class)
+@Table(name = "task")
 public class TaskEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String title;
     private String description;
