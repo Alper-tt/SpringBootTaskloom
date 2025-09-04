@@ -8,6 +8,8 @@ import com.taskloom.model.request.TaskUpdateRequest;
 import com.taskloom.model.response.TaskResponse;
 import com.taskloom.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -87,5 +89,10 @@ public class TaskService {
 
         return taskEntities.stream()
                 .map(this::toResponse)
-                .toList();    }
+                .toList();
+    }
+
+    public Page<TaskResponse> getAllTasksPage(Pageable pageable) {
+        return taskRepository.findAll(pageable).map(this::toResponse);
+    }
 }

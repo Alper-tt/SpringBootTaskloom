@@ -8,6 +8,8 @@ import com.taskloom.model.response.TaskResponse;
 import com.taskloom.service.TaskService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,16 +25,6 @@ public class TaskController {
     @GetMapping()
     public ResponseEntity<List<TaskResponse>> getAllTasks(){
         return ResponseEntity.status(HttpStatus.OK).body(taskService.findAll());
-    }
-
-    @GetMapping("/status/{status}")
-    public ResponseEntity<List<TaskResponse>> getTasksByStatus(@PathVariable TaskStatus status){
-        return ResponseEntity.status(HttpStatus.OK).body(taskService.findByStatus(status));
-    }
-
-    @GetMapping("/title/{title}")
-    public ResponseEntity<List<TaskResponse>> getTasksByTitle(@PathVariable String title){
-        return ResponseEntity.status(HttpStatus.OK).body(taskService.findByTitle(title));
     }
 
     @GetMapping("/{id}")
@@ -59,5 +51,20 @@ public class TaskController {
     @PatchMapping("/{id}/status")
     public ResponseEntity<TaskResponse> updateTaskStatusById(@PathVariable Integer id, @RequestBody @Valid TaskStatusUpdate status){
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(taskService.updateTaskStatusById(id, status));
+    }
+
+    @GetMapping("/status/{status}")
+    public ResponseEntity<List<TaskResponse>> getTasksByStatus(@PathVariable TaskStatus status){
+        return ResponseEntity.status(HttpStatus.OK).body(taskService.findByStatus(status));
+    }
+
+    @GetMapping("/title/{title}")
+    public ResponseEntity<List<TaskResponse>> getTasksByTitle(@PathVariable String title){
+        return ResponseEntity.status(HttpStatus.OK).body(taskService.findByTitle(title));
+    }
+
+    @GetMapping("/page")
+    public ResponseEntity<Page<TaskResponse>> getAllTasks(Pageable pageable){
+        return ResponseEntity.status(HttpStatus.OK).body(taskService.getAllTasksPage(pageable));
     }
 }
