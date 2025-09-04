@@ -9,7 +9,6 @@ import java.util.List;
 
 @Repository
 public interface TaskRepository extends JpaRepository<TaskEntity, Integer> {
-    List<TaskEntity> findByStatus(TaskStatus status);
-
     List<TaskEntity> findByTitleContainingIgnoreCase(String title);
+    List<TaskEntity> findByStatus(TaskStatus status);
 }
