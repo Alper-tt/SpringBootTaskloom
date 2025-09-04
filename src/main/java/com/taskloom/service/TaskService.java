@@ -73,4 +73,19 @@ public class TaskService {
         taskEntity.setStatus(status.getTaskStatus());
         return toResponse(taskRepository.save(taskEntity));
     }
+
+    public List<TaskResponse> findByStatus(TaskStatus taskStatus) {
+        List<TaskEntity> taskEntities = taskRepository.findByStatus(taskStatus);
+
+        return taskEntities.stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    public List<TaskResponse> findByTitle(String title) {
+        List<TaskEntity> taskEntities = taskRepository.findByTitleContainingIgnoreCase(title);
+
+        return taskEntities.stream()
+                .map(this::toResponse)
+                .toList();    }
 }

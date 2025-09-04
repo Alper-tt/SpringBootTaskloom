@@ -1,5 +1,6 @@
 package com.taskloom.controller;
 
+import com.taskloom.model.TaskStatus;
 import com.taskloom.model.request.TaskCreateRequest;
 import com.taskloom.model.request.TaskStatusUpdate;
 import com.taskloom.model.request.TaskUpdateRequest;
@@ -22,6 +23,16 @@ public class TaskController {
     @GetMapping()
     public ResponseEntity<List<TaskResponse>> getAllTasks(){
         return ResponseEntity.status(HttpStatus.OK).body(taskService.findAll());
+    }
+
+    @GetMapping("/status/{status}")
+    public ResponseEntity<List<TaskResponse>> getTasksByStatus(@PathVariable TaskStatus status){
+        return ResponseEntity.status(HttpStatus.OK).body(taskService.findByStatus(status));
+    }
+
+    @GetMapping("/title/{title}")
+    public ResponseEntity<List<TaskResponse>> getTasksByTitle(@PathVariable String title){
+        return ResponseEntity.status(HttpStatus.OK).body(taskService.findByTitle(title));
     }
 
     @GetMapping("/{id}")

@@ -127,7 +127,7 @@ jobs:
           GAUGE_LOG_LEVEL: debug
         run: |
           ./mvnw -q -DskipTests=true test-compile gauge:execute -DspecsDir=specs
-    
+
 
       - name: Upload Gauge HTML report
         if: always()
