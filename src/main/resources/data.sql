@@ -1,3 +1,8 @@
+INSERT INTO app_user (username, mail) VALUES
+('test', 'test@test.com'),
+('string', 'string@string.com'),
+('example', 'example@example.com');
+
 INSERT INTO task (title, description, status, created_at, updated_at) VALUES
 ('Grocery shopping', 'Buy milk, tea, coffee', 'TODO', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 ('Write report', 'Finish Q3 financial summary', 'IN_PROGRESS', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),

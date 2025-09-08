@@ -7,7 +7,6 @@ import com.taskloom.model.request.TaskCreateRequest;
 import com.taskloom.model.request.TaskStatusUpdate;
 import com.taskloom.model.request.TaskUpdateRequest;
 import com.taskloom.model.response.TaskResponse;
-import com.taskloom.model.response.UserResponse;
 import com.taskloom.repository.TaskRepository;
 import com.taskloom.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +22,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TaskService {
     private final TaskRepository taskRepository;
-    private final UserService userService;
     private final UserRepository userRepository;
 
     public TaskResponse taskEntityToTaskResponse(TaskEntity e){
@@ -68,12 +66,16 @@ public class TaskService {
     }
 
     public TaskResponse updateTask(Integer id, TaskUpdateRequest taskUpdateRequest) {
+        UserEntity user = userRepository.findById(taskUpdateRequest.getAssignedUserId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "User not found"));
+
         TaskEntity taskEntity = taskRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found"));
 
         taskEntity.setTitle(taskUpdateRequest.getTitle());
         taskEntity.setDescription(taskUpdateRequest.getDescription());
         taskEntity.setStatus(taskUpdateRequest.getStatus() != null ? taskUpdateRequest.getStatus() : TaskStatus.TODO);
+        taskEntity.setUser(user);
 
         return taskEntityToTaskResponse(taskRepository.save(taskEntity));
     }

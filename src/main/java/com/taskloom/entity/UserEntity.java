@@ -22,6 +22,6 @@ public class UserEntity {
 
     private String mail;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<TaskEntity> userTasks;
 }

@@ -38,5 +38,6 @@ public class TaskEntity {
     private Instant updatedAt;
 
     @ManyToOne()
+    @JoinColumn(name = "user_id")
     private UserEntity user;
 }

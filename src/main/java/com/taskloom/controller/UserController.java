@@ -35,7 +35,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponse> updateUserById(@PathVariable Integer id, @RequestBody UserUpdateRequest userUpdateRequest) {
+    public ResponseEntity<UserResponse> updateUserById(@PathVariable Integer id, @RequestBody @Valid UserUpdateRequest userUpdateRequest) {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(userService.updateUserById(id, userUpdateRequest));
     }
 
@@ -46,12 +46,12 @@ public class UserController {
     }
 
     @GetMapping("/username/{username}")
-    public ResponseEntity<UserResponse> getUserByUsername(String username){
+    public ResponseEntity<UserResponse> getUserByUsername(@PathVariable String username){
         return ResponseEntity.status(HttpStatus.OK).body(userService.findByUsername(username));
     }
 
     @GetMapping("/mail/{mail}")
-    public ResponseEntity<UserResponse> getUserByMail(String mail){
+    public ResponseEntity<UserResponse> getUserByMail(@PathVariable String mail){
         return ResponseEntity.status(HttpStatus.OK).body(userService.findByMail(mail));
     }
 
