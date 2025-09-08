@@ -1,12 +1,15 @@
 package com.taskloom.service;
 
 import com.taskloom.entity.TaskEntity;
+import com.taskloom.entity.UserEntity;
 import com.taskloom.model.TaskStatus;
 import com.taskloom.model.request.TaskCreateRequest;
 import com.taskloom.model.request.TaskStatusUpdate;
 import com.taskloom.model.request.TaskUpdateRequest;
 import com.taskloom.model.response.TaskResponse;
+import com.taskloom.model.response.UserResponse;
 import com.taskloom.repository.TaskRepository;
+import com.taskloom.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,9 +23,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TaskService {
     private final TaskRepository taskRepository;
+    private final UserService userService;
+    private final UserRepository userRepository;
 
-    private TaskResponse toResponse(TaskEntity e){
-        return new TaskResponse(e.getId(), e.getTitle(), e.getDescription(), e.getStatus(), e.getCreatedAt(), e.getUpdatedAt());
+    public TaskResponse taskEntityToTaskResponse(TaskEntity e){
+        return new TaskResponse(e.getId(),
+                e.getTitle(),
+                e.getDescription(),
+                e.getStatus(),
+                e.getCreatedAt(),
+                e.getUpdatedAt());
     }
 
     public List<TaskResponse> findAll() {
@@ -32,7 +42,7 @@ public class TaskService {
         }
 
         return taskEntities.stream()
-                .map(this::toResponse)
+                .map(this::taskEntityToTaskResponse)
                 .toList();
     }
 
@@ -40,17 +50,21 @@ public class TaskService {
         TaskEntity taskEntity = taskRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found"));
 
-        return toResponse(taskEntity);
+        return taskEntityToTaskResponse(taskEntity);
     }
 
     public TaskResponse createTask(TaskCreateRequest taskCreateRequest) {
+        UserEntity user = userRepository.findById(taskCreateRequest.getAssignedUserId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "User not found"));
+
         TaskEntity taskEntity = TaskEntity.builder()
                 .title(taskCreateRequest.getTitle())
                 .description(taskCreateRequest.getDescription())
                 .status(taskCreateRequest.getStatus() != null ? taskCreateRequest.getStatus() : TaskStatus.TODO)
+                .user(user)
                 .build();
 
-        return toResponse(taskRepository.save(taskEntity));
+        return taskEntityToTaskResponse(taskRepository.save(taskEntity));
     }
 
     public TaskResponse updateTask(Integer id, TaskUpdateRequest taskUpdateRequest) {
@@ -61,7 +75,7 @@ public class TaskService {
         taskEntity.setDescription(taskUpdateRequest.getDescription());
         taskEntity.setStatus(taskUpdateRequest.getStatus() != null ? taskUpdateRequest.getStatus() : TaskStatus.TODO);
 
-        return toResponse(taskRepository.save(taskEntity));
+        return taskEntityToTaskResponse(taskRepository.save(taskEntity));
     }
 
     public void deleteTaskById(Integer id) {
@@ -73,14 +87,14 @@ public class TaskService {
         TaskEntity taskEntity = taskRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found"));
         taskEntity.setStatus(status.getTaskStatus());
-        return toResponse(taskRepository.save(taskEntity));
+        return taskEntityToTaskResponse(taskRepository.save(taskEntity));
     }
 
     public List<TaskResponse> findByStatus(TaskStatus taskStatus) {
         List<TaskEntity> taskEntities = taskRepository.findByStatus(taskStatus);
 
         return taskEntities.stream()
-                .map(this::toResponse)
+                .map(this::taskEntityToTaskResponse)
                 .toList();
     }
 
@@ -88,11 +102,11 @@ public class TaskService {
         List<TaskEntity> taskEntities = taskRepository.findByTitleContainingIgnoreCase(title);
 
         return taskEntities.stream()
-                .map(this::toResponse)
+                .map(this::taskEntityToTaskResponse)
                 .toList();
     }
 
     public Page<TaskResponse> getAllTasksPage(Pageable pageable) {
-        return taskRepository.findAll(pageable).map(this::toResponse);
+        return taskRepository.findAll(pageable).map(this::taskEntityToTaskResponse);
     }
 }

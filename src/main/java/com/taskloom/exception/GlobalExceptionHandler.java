@@ -1,6 +1,6 @@
 package com.taskloom.exception;
 
-import com.taskloom.model.response.ErrorResponseDTO;
+import com.taskloom.model.response.ErrorResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -12,26 +12,26 @@ import org.springframework.web.server.ResponseStatusException;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler
-    public ResponseEntity<ErrorResponseDTO> handleResponseStatusException(ResponseStatusException e) {
-        ErrorResponseDTO errorResponseDTO = new ErrorResponseDTO(e.getMessage(), e.getStatusCode().value());
-        return ResponseEntity.status(e.getStatusCode()).body(errorResponseDTO);
+    public ResponseEntity<ErrorResponse> handleResponseStatusException(ResponseStatusException e) {
+        ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), e.getStatusCode().value());
+        return ResponseEntity.status(e.getStatusCode()).body(errorResponse);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ErrorResponseDTO> handleGeneralException(HttpMessageNotReadableException e) {
-        ErrorResponseDTO errorResponseDTO = new ErrorResponseDTO(e.getMessage(), 401);
-        return ResponseEntity.status(401).body(errorResponseDTO);
+    public ResponseEntity<ErrorResponse> handleGeneralException(HttpMessageNotReadableException e) {
+        ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), 401);
+        return ResponseEntity.status(401).body(errorResponse);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponseDTO> handleMethodArgumentNotValid(MethodArgumentNotValidException e) {
-        ErrorResponseDTO errorResponseDTO = new ErrorResponseDTO("Argument not valid.", e.getStatusCode().value());
-        return ResponseEntity.status(e.getStatusCode()).body(errorResponseDTO);
+    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValid(MethodArgumentNotValidException e) {
+        ErrorResponse errorResponse = new ErrorResponse("Argument not valid.", e.getStatusCode().value());
+        return ResponseEntity.status(e.getStatusCode()).body(errorResponse);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponseDTO> handleIllegalArgument(IllegalArgumentException e) {
-        ErrorResponseDTO errorResponseDTO = new ErrorResponseDTO(e.getMessage(), 422);
-        return ResponseEntity.status(422).body(errorResponseDTO);
+    public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException e) {
+        ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), 422);
+        return ResponseEntity.status(422).body(errorResponse);
     }
 }

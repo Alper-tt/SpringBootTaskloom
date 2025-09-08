@@ -22,4 +22,6 @@ public class TaskCreateRequest {
     private String description;
 
     private TaskStatus status;
+
+    private Integer assignedUserId;
 }
