@@ -1,6 +1,6 @@
 package com.taskloom.model.request;
 
-import com.taskloom.model.TaskStatus;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -12,15 +12,13 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class TaskUpdateRequest {
+public class UserCreateRequest {
     @NotBlank
-    @Size(min = 3, max = 255)
-    private String title;
+    @Size(min = 3, max = 30)
+    private String  username;
 
-    @Size(min = 3, max = 255)
-    private String description;
-
-    private TaskStatus status;
-
-    private Integer assignedUserId;
+    @NotBlank
+    @Size(min = 3, max = 50)
+    @Email(regexp = "[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,3}")
+    private String  mail;
 }

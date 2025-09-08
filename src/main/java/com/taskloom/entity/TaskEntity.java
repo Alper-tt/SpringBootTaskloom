@@ -11,7 +11,7 @@ import java.time.Instant;
 
 @Getter
 @Setter
-@Entity()
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -21,7 +21,9 @@ public class TaskEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
     private String title;
+
     private String description;
 
     @Enumerated(EnumType.STRING)
@@ -34,4 +36,8 @@ public class TaskEntity {
     @LastModifiedDate
     @Column(nullable = false)
     private Instant updatedAt;
+
+    @ManyToOne()
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
 }
