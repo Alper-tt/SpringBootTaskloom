@@ -1,7 +1,7 @@
-INSERT INTO app_user (username, mail) VALUES
-('test', 'test@test.com'),
-('string', 'string@string.com'),
-('example', 'example@example.com');
+INSERT INTO app_user (username, password, mail) VALUES
+('test', 'test123', 'test@test.com'),
+('string', 'string123','string@string.com'),
+('example', 'example123', 'example@example.com');
 
 INSERT INTO task (title, description, status, created_at, updated_at) VALUES
 ('Grocery shopping', 'Buy milk, tea, coffee', 'TODO', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
