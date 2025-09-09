@@ -20,6 +20,8 @@ public class UserEntity {
 
     private String username;
 
+    private String password;
+
     private String mail;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)

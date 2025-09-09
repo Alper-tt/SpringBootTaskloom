@@ -54,11 +54,8 @@ public class UserService extends Util {
     }
 
     public UserResponse findByUsername(String username) {
-        if(!userRepository.existsByUsername(username)){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
-        }
-
-        UserEntity userEntity = userRepository.findByUsername(username);
+        UserEntity userEntity = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
         return userEntityToUserResponse(userEntity);
     }
 
