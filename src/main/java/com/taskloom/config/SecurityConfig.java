@@ -52,7 +52,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/h2-console/**", "/swagger-ui/**","/v3/api-docs/**", "/actuator/**")
+                        .requestMatchers("/auth/**", "/h2-console/**", "/swagger-ui/**","/v3/api-docs/**", "/actuator/**", "tasks/**")
                         .permitAll()
                         .anyRequest()
                         .authenticated())
