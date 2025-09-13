@@ -11,6 +11,7 @@ import com.taskloom.repository.TaskRepository;
 import com.taskloom.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -108,7 +109,11 @@ public class TaskService {
                 .toList();
     }
 
-    public Page<TaskResponse> getAllTasksPage(Pageable pageable) {
-        return taskRepository.findAll(pageable).map(this::taskEntityToTaskResponse);
+    public Page<TaskResponse> getAllTasksPage(Integer page, Integer size, String query) {
+        Pageable pageable = PageRequest.of(page, size);
+        //title="asd" status=done
+
+        Page<TaskEntity> byTitleOrStatus = taskRepository.findByTitleOrStatus(query, pageable);
+        return byTitleOrStatus.map(this::taskEntityToTaskResponse);
     }
 }

@@ -53,18 +53,8 @@ public class TaskController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(taskService.updateTaskStatusById(id, status));
     }
 
-    @GetMapping("/status/{status}")
-    public ResponseEntity<List<TaskResponse>> getTasksByStatus(@PathVariable TaskStatus status){
-        return ResponseEntity.status(HttpStatus.OK).body(taskService.findByStatus(status));
-    }
-
-    @GetMapping("/title/{title}")
-    public ResponseEntity<List<TaskResponse>> getTasksByTitle(@PathVariable String title){
-        return ResponseEntity.status(HttpStatus.OK).body(taskService.findByTitle(title));
-    }
-
     @GetMapping("/page")
-    public ResponseEntity<Page<TaskResponse>> getAllTasks(Pageable pageable){
-        return ResponseEntity.status(HttpStatus.OK).body(taskService.getAllTasksPage(pageable));
+    public ResponseEntity<Page<TaskResponse>> getAllTasks(@RequestParam Integer page, @RequestParam Integer size, @RequestParam(required = false) String query){
+        return ResponseEntity.status(HttpStatus.OK).body(taskService.getAllTasksPage(page, size, query));
     }
 }
