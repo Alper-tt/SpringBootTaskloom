@@ -11,6 +11,8 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -49,14 +51,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, JwtService jwtService) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/h2-console/**", "/swagger-ui/**","/v3/api-docs/**", "/actuator/**", "tasks/**")
+                        .requestMatchers("/auth/**", "/h2-console/**", "/swagger-ui/**","/v3/api-docs/**", "/actuator/**")
                         .permitAll()
                         .anyRequest()
                         .authenticated())
-                .headers(h -> h.frameOptions((frame -> frame.disable())))
+                .headers(h -> h.frameOptions((HeadersConfigurer.FrameOptionsConfig::disable)))
                 .addFilterBefore(new JwtAuthFilter(jwtService,uds), UsernamePasswordAuthenticationFilter.class)
                 .httpBasic(Customizer.withDefaults());
 

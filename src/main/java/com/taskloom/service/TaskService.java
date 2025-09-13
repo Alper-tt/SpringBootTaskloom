@@ -93,26 +93,8 @@ public class TaskService {
         return taskEntityToTaskResponse(taskRepository.save(taskEntity));
     }
 
-    public List<TaskResponse> findByStatus(TaskStatus taskStatus) {
-        List<TaskEntity> taskEntities = taskRepository.findByStatus(taskStatus);
-
-        return taskEntities.stream()
-                .map(this::taskEntityToTaskResponse)
-                .toList();
-    }
-
-    public List<TaskResponse> findByTitle(String title) {
-        List<TaskEntity> taskEntities = taskRepository.findByTitleContainingIgnoreCase(title);
-
-        return taskEntities.stream()
-                .map(this::taskEntityToTaskResponse)
-                .toList();
-    }
-
     public Page<TaskResponse> getAllTasksPage(Integer page, Integer size, String query) {
         Pageable pageable = PageRequest.of(page, size);
-        //title="asd" status=done
-
         Page<TaskEntity> byTitleOrStatus = taskRepository.findByTitleOrStatus(query, pageable);
         return byTitleOrStatus.map(this::taskEntityToTaskResponse);
     }
