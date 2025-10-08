@@ -45,10 +45,10 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody @Valid RegisterRequest registerRequest) {
         if (userRepository.existsByUsername(registerRequest.getUsername()))
-            return ResponseEntity.status(409).body(Map.of("message","Username already in use"));
+            return ResponseEntity.status(409).body(Map.of("message","Username already in use."));
 
         if(userRepository.existsByMail(registerRequest.getMail()))
-            return ResponseEntity.status(409).body(Map.of("message","Email already in use"));
+            return ResponseEntity.status(409).body(Map.of("message","Email already in use."));
 
 
         userRepository.save(UserEntity
@@ -58,6 +58,6 @@ public class AuthController {
                 .password(encoder.encode(registerRequest.getPassword()))
                 .build());
 
-        return ResponseEntity.status(HttpStatus.OK).body(Map.of("message","User registered successfully"));
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("message","User registered successfully."));
     }
 }

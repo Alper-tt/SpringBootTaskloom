@@ -10,6 +10,10 @@ import com.taskloom.model.response.TaskResponse;
 import com.taskloom.repository.TaskRepository;
 import com.taskloom.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -34,7 +38,9 @@ public class TaskService {
                 e.getUpdatedAt());
     }
 
+    @Cacheable(value = "task:all")
     public List<TaskResponse> findAll() {
+        System.out.println(">>> DB'den veri çekiliyor...");
         List<TaskEntity> taskEntities = taskRepository.findAll();
         if(taskEntities.isEmpty()){
             throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Task not found");
@@ -45,13 +51,16 @@ public class TaskService {
                 .toList();
     }
 
+    @Cacheable(value = "task:by-id", key = "#id")
     public TaskResponse findById(Integer id) {
+        System.out.println(">>> DB'den veri çekiliyor...");
         TaskEntity taskEntity = taskRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found"));
 
         return taskEntityToTaskResponse(taskEntity);
     }
 
+    @CacheEvict(value = {"task:all", "task:pages"}, allEntries = true)
     public TaskResponse createTask(TaskCreateRequest taskCreateRequest) {
         UserEntity user = userRepository.findById(taskCreateRequest.getAssignedUserId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "User not found"));
@@ -66,6 +75,9 @@ public class TaskService {
         return taskEntityToTaskResponse(taskRepository.save(taskEntity));
     }
 
+
+    @CachePut(value = "task:by-id", key = "#id")
+    @CacheEvict(value = {"task:all", "task:pages"}, allEntries = true)
     public TaskResponse updateTask(Integer id, TaskUpdateRequest taskUpdateRequest) {
         UserEntity user = userRepository.findById(taskUpdateRequest.getAssignedUserId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "User not found"));
@@ -81,17 +93,24 @@ public class TaskService {
         return taskEntityToTaskResponse(taskRepository.save(taskEntity));
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "task:by-id", key = "#id"),
+            @CacheEvict(value = {"task:all", "task:pages"}, allEntries = true)
+    })
     public void deleteTaskById(Integer id) {
         if(!taskRepository.existsById(id)) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found");
         taskRepository.deleteById(id);
     }
 
+    @CachePut(value = "task:by-id", key = "#id")
+    @CacheEvict(value = {"task:all", "task:pages"}, allEntries = true)
     public TaskResponse updateTaskStatusById(Integer id, TaskStatusUpdate status) {
         TaskEntity taskEntity = taskRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found"));
         taskEntity.setStatus(status.getTaskStatus());
         return taskEntityToTaskResponse(taskRepository.save(taskEntity));
     }
+
 
     public Page<TaskResponse> getAllTasksPage(Integer page, Integer size, String query) {
         Pageable pageable = PageRequest.of(page, size);
